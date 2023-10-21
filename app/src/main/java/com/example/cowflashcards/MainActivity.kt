@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
 fun ShowRandomCow(resources: Resources) {
 
     // Get random number
+    // How to get random number from: https://stackoverflow.com/a/45687695
     val index = (0..(cows.size - 1)).random()
     val cow = cows.entries.elementAt(index)
 
