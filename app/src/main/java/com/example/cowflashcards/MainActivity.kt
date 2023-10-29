@@ -14,8 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
@@ -113,8 +115,10 @@ fun ShowRandomCow(resources: Resources) {
     val cow = cows.entries.elementAt(index)
 
     // How to stop elements from overlapping from: https://developer.android.com/jetpack/compose/layouts/basics
+    // How to add inter-element spacing from: https://stackoverflow.com/a/68201569
     Column(
-        Modifier.padding(10.dp)
+        modifier = Modifier.padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // How to load image from disc from: https://developer.android.com/jetpack/compose/graphics/images/loading
         Image(
@@ -146,6 +150,7 @@ fun NameField(who: String) {
                 Modifier
                     .background(Color.LightGray, RoundedCornerShape(percent = 30))
                     .padding(5.dp)
+                    .fillMaxWidth()
             ) {
                 innerTextField()
             }
@@ -178,7 +183,8 @@ fun ShowCow(resources: Resources) {
 fun CowPreview() {
     CowFlashcardsTheme {
         Column(
-            Modifier.padding(10.dp)
+            Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Image(
                 painter = painterResource(R.drawable.benny),
