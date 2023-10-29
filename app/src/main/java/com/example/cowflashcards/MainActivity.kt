@@ -15,17 +15,28 @@ import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
@@ -71,6 +82,8 @@ val cows = mapOf<String, Int>(
     "William"   to  R.drawable.william,
     "Wizard"    to  R.drawable.wizard
 )
+
+var showPopUp = false;
 
 
 class MainActivity : ComponentActivity() {
@@ -137,25 +150,71 @@ fun ShowRandomCow(resources: Resources) {
  */
 @Composable
 fun NameField(who: String) {
-    var value by rememberSaveable { mutableStateOf("") }
-    BasicTextField(
-        value = value,
-        onValueChange = { value = it },
-        decorationBox = { innerTextField ->
-            // Because the decorationBox is used, the whole Row gets the same behaviour as the
-            // internal input field would have otherwise. For example, there is no need to add a
-            // Modifier.clickable to the Row anymore to bring the text field into focus when user
-            // taps on a larger text field area which includes paddings and the icon areas.
-            Row(
-                Modifier
-                    .background(Color.LightGray, RoundedCornerShape(percent = 30))
-                    .padding(5.dp)
-                    .fillMaxWidth()
-            ) {
-                innerTextField()
+
+    var answer by rememberSaveable { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BasicTextField(
+            value = answer,
+            onValueChange = { answer = it },
+            decorationBox = { innerTextField ->
+                // Because the decorationBox is used, the whole Row gets the same behaviour as the
+                // internal input field would have otherwise. For example, there is no need to add a
+                // Modifier.clickable to the Row anymore to bring the text field into focus when user
+                // taps on a larger text field area which includes paddings and the icon areas.
+                Row(
+                    Modifier
+                        .background(Color.LightGray, RoundedCornerShape(percent = 30))
+                        .padding(5.dp)
+                ) {
+                    innerTextField()
+
+                }
+
             }
+        )
+
+        Button(
+            onClick = {showPopUp = true},
+            contentPadding = ButtonDefaults.ContentPadding
+        ) {
+            Text("Check")
         }
-    )
+
+    }
+
+    if (showPopUp) {
+        ShowResult(checkAnswer(who, answer));
+    }
+
+}
+
+
+
+
+fun checkAnswer(who: String, answer: String): Boolean {
+    return (who.compareTo(answer.trim(), true) == 0);
+}
+
+
+
+@Composable
+fun ShowResult(correct: Boolean) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        val message = if (correct) "Correct!" else "Wrong!";
+        Text(message);
+    }
+
 }
 
 
