@@ -96,35 +96,25 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ShowRandomCow(resources)
+                    CowDisplay()
                 }
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        setContent {
-            CowFlashcardsTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ShowRandomCow(resources)
-                }
-            }
-        }
-    }
 }
 
 
 @Composable
-fun ShowRandomCow(resources: Resources) {
+fun CowDisplay() {
+    var index by rememberSaveable { mutableStateOf(getRandomIndex()) }
+    ShowRandomCow(index, onIndexChange = {index = it})
+}
 
-    // Get random number
-    // How to get random number from: https://stackoverflow.com/a/45687695
-    val index = (0..(cows.size - 1)).random()
+
+@Composable
+fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
+
     val cow = cows.entries.elementAt(index)
 
     // How to stop elements from overlapping from: https://developer.android.com/jetpack/compose/layouts/basics
@@ -139,7 +129,7 @@ fun ShowRandomCow(resources: Resources) {
             contentDescription = "A cow?"
         )
         // Text(text = cow.key)
-        NameField(who = cow.key)
+        NameField(who = cow.key, onIndexChange = onIndexChange)
     }
 
 }
@@ -149,7 +139,7 @@ fun ShowRandomCow(resources: Resources) {
  * BasicTextField component from: https://developer.android.com/reference/kotlin/androidx/compose/foundation/text/package-summary#BasicTextField(kotlin.String,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.Boolean,androidx.compose.ui.text.TextStyle,androidx.compose.foundation.text.KeyboardOptions,androidx.compose.foundation.text.KeyboardActions,kotlin.Boolean,kotlin.Int,kotlin.Int,androidx.compose.ui.text.input.VisualTransformation,kotlin.Function1,androidx.compose.foundation.interaction.MutableInteractionSource,androidx.compose.ui.graphics.Brush,kotlin.Function1)
  */
 @Composable
-fun NameField(who: String) {
+fun NameField(who: String, onIndexChange: (Int) -> Unit) {
 
     var answer by rememberSaveable { mutableStateOf("") }
     var showPopUp by rememberSaveable { mutableStateOf(false) }
@@ -162,8 +152,8 @@ fun NameField(who: String) {
         BasicTextField(
             value = answer,
             onValueChange = {
-                showPopUp = false;
-                Log.d("resultMessage",("Hid popup: $showPopUp"));
+                showPopUp = false
+                Log.d("resultMessage",("Hid popup: $showPopUp"))
                 answer = it
             },
             maxLines = 1,
@@ -186,8 +176,8 @@ fun NameField(who: String) {
 
         Button(
             onClick = {
-                showPopUp = true;
-                Log.d("resultMessage", "Clicked button: $showPopUp");
+                showPopUp = true
+                Log.d("resultMessage", "Clicked button: $showPopUp")
             },
             contentPadding = ButtonDefaults.ContentPadding
         ) {
@@ -197,11 +187,17 @@ fun NameField(who: String) {
     }
 
     if (showPopUp) {
-        ShowResult(checkAnswer(who, answer));
-        Log.d("resultMessage", "Showing popup: $showPopUp");
-    }
-    else {
-        Log.d("resultMessage", "Not showing popup: $showPopUp");
+        val correct = checkAnswer(who, answer)
+        ShowResult(correct);
+
+        if (correct) {
+            onIndexChange(getRandomIndex())
+            answer = ""
+            showPopUp = false
+        }
+
+        Log.d("resultMessage", "Showing popup: $showPopUp")
+
     }
 
 }
@@ -210,7 +206,7 @@ fun NameField(who: String) {
 
 
 fun checkAnswer(who: String, answer: String): Boolean {
-    return (who.compareTo(answer.trim(), true) == 0);
+    return (who.compareTo(answer.trim(), true) == 0)
 }
 
 
@@ -224,8 +220,8 @@ fun ShowResult(correct: Boolean) {
             .fillMaxHeight(),
         contentAlignment = Alignment.Center
     ) {
-        val message = if (correct) "Correct!" else "Wrong!";
-        Text(message);
+        val message = if (correct) "Correct!" else "Wrong!"
+        Text(message)
     }
 
 }
@@ -248,6 +244,12 @@ fun ShowCow(resources: Resources) {
 
 }
 
+fun getRandomIndex(): Int {
+    // Get random number
+    // How to get random number from: https://stackoverflow.com/a/45687695
+    return (0..(cows.size - 1)).random()
+}
+
 
 
 @Preview(showBackground = true)
@@ -263,23 +265,7 @@ fun CowPreview() {
                 contentDescription = "Benny!"
             )
             // Text(text = "Benny")
-            NameField(who = "Benny")
+            NameField(who = "Benny", {})
         }
     }
-}
-
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Greeting("Benny", Modifier.fillMaxSize())
 }
