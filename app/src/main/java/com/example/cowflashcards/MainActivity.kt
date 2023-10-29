@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -111,14 +112,18 @@ fun ShowRandomCow(resources: Resources) {
     val index = (0..(cows.size - 1)).random()
     val cow = cows.entries.elementAt(index)
 
-    // How to load image from disc from: https://developer.android.com/jetpack/compose/graphics/images/loading
-    Image(
-        painter = painterResource(cow.value),
-        contentDescription = "A cow?"
-    )
-    Text(text = cow.key)
-    NameField(who = cow.key)
-
+    // How to stop elements from overlapping from: https://developer.android.com/jetpack/compose/layouts/basics
+    Column(
+        Modifier.padding(10.dp)
+    ) {
+        // How to load image from disc from: https://developer.android.com/jetpack/compose/graphics/images/loading
+        Image(
+            painter = painterResource(cow.value),
+            contentDescription = "A cow?"
+        )
+        // Text(text = cow.key)
+        NameField(who = cow.key)
+    }
 
 }
 
@@ -172,12 +177,16 @@ fun ShowCow(resources: Resources) {
 @Composable
 fun CowPreview() {
     CowFlashcardsTheme {
-        Image(
-            painter = painterResource(R.drawable.benny),
-            contentDescription = "Benny!"
-        )
-        Text(text = "Benny")
-        NameField(who = "Benny")
+        Column(
+            Modifier.padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.benny),
+                contentDescription = "Benny!"
+            )
+            // Text(text = "Benny")
+            NameField(who = "Benny")
+        }
     }
 }
 
