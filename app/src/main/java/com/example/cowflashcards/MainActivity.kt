@@ -34,9 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 
 
@@ -135,7 +139,11 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
             )
 
             if (showCowName) {
-                Text(cow.key)
+                Text(
+                    text = cow.key,
+                    fontSize = 64.sp,
+                    color = Color.Cyan
+                )
             }
 
         }
@@ -201,7 +209,7 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (B
         if (showRevealButton) {
             Button(
                 onClick = {
-                    onShowCowNameChange(true);
+                    onShowCowNameChange(true)
                 },
                 contentPadding = ButtonDefaults.ContentPadding
             ) {
@@ -213,7 +221,7 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (B
 
     if (doCheck) {
         val correct = checkAnswer(who, answer)
-        ShowResult(correct);
+        ShowResult(correct)
 
         if (correct) {
             answer = ""
@@ -223,7 +231,7 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (B
             onIndexChange(getRandomIndex())
         }
         else {
-            showRevealButton = true;
+            showRevealButton = true
         }
 
         Log.d("resultMessage", "Showing popup: $doCheck")
@@ -255,13 +263,6 @@ fun ShowResult(correct: Boolean) {
     }
 
 }
-
-
-@Composable
-fun ShowRevealButton() {
-
-}
-
 
 
 
