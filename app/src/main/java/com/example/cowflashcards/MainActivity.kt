@@ -2,6 +2,7 @@ package com.example.cowflashcards
 
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -83,7 +84,6 @@ val cows = mapOf<String, Int>(
     "Wizard"    to  R.drawable.wizard
 )
 
-var showPopUp = false;
 
 
 class MainActivity : ComponentActivity() {
@@ -152,6 +152,7 @@ fun ShowRandomCow(resources: Resources) {
 fun NameField(who: String) {
 
     var answer by rememberSaveable { mutableStateOf("") }
+    var showPopUp by rememberSaveable { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -160,7 +161,12 @@ fun NameField(who: String) {
     ) {
         BasicTextField(
             value = answer,
-            onValueChange = { answer = it },
+            onValueChange = {
+                showPopUp = false;
+                Log.d("resultMessage",("Hid popup: $showPopUp"));
+                answer = it
+            },
+            maxLines = 1,
             decorationBox = { innerTextField ->
                 // Because the decorationBox is used, the whole Row gets the same behaviour as the
                 // internal input field would have otherwise. For example, there is no need to add a
@@ -179,7 +185,10 @@ fun NameField(who: String) {
         )
 
         Button(
-            onClick = {showPopUp = true},
+            onClick = {
+                showPopUp = true;
+                Log.d("resultMessage", "Clicked button: $showPopUp");
+            },
             contentPadding = ButtonDefaults.ContentPadding
         ) {
             Text("Check")
@@ -189,6 +198,10 @@ fun NameField(who: String) {
 
     if (showPopUp) {
         ShowResult(checkAnswer(who, answer));
+        Log.d("resultMessage", "Showing popup: $showPopUp");
+    }
+    else {
+        Log.d("resultMessage", "Not showing popup: $showPopUp");
     }
 
 }
