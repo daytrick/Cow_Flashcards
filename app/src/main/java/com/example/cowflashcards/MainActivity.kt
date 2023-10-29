@@ -187,13 +187,17 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit) {
     }
 
     if (showPopUp) {
-        ShowResult(checkAnswer(who, answer))
+        val correct = checkAnswer(who, answer)
+        ShowResult(correct);
+
+        if (correct) {
+            onIndexChange(getRandomIndex())
+            answer = ""
+            showPopUp = false
+        }
+
         Log.d("resultMessage", "Showing popup: $showPopUp")
-        onIndexChange(getRandomIndex())
-        showPopUp = false
-    }
-    else {
-        Log.d("resultMessage", "Not showing popup: $showPopUp")
+
     }
 
 }
