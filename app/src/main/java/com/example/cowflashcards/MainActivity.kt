@@ -1,7 +1,6 @@
 package com.example.cowflashcards
 
 import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 // How to create maps from: https://www.baeldung.com/kotlin/maps
 val cows = mapOf<String, Int>(
@@ -108,8 +117,40 @@ fun ShowRandomCow(resources: Resources) {
         contentDescription = "A cow?"
     )
     Text(text = cow.key)
+    NameField(who = cow.key)
+
 
 }
+
+
+/**
+ * BasicTextField component from: https://developer.android.com/reference/kotlin/androidx/compose/foundation/text/package-summary#BasicTextField(kotlin.String,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.Boolean,androidx.compose.ui.text.TextStyle,androidx.compose.foundation.text.KeyboardOptions,androidx.compose.foundation.text.KeyboardActions,kotlin.Boolean,kotlin.Int,kotlin.Int,androidx.compose.ui.text.input.VisualTransformation,kotlin.Function1,androidx.compose.foundation.interaction.MutableInteractionSource,androidx.compose.ui.graphics.Brush,kotlin.Function1)
+ */
+@Composable
+fun NameField(who: String) {
+    var value by rememberSaveable { mutableStateOf("") }
+    BasicTextField(
+        value = value,
+        onValueChange = { value = it },
+        decorationBox = { innerTextField ->
+            // Because the decorationBox is used, the whole Row gets the same behaviour as the
+            // internal input field would have otherwise. For example, there is no need to add a
+            // Modifier.clickable to the Row anymore to bring the text field into focus when user
+            // taps on a larger text field area which includes paddings and the icon areas.
+            Row(
+                Modifier
+                    .background(Color.LightGray, RoundedCornerShape(percent = 30))
+                    .padding(5.dp)
+            ) {
+                innerTextField()
+            }
+        }
+    )
+}
+
+
+
+
 
 @Composable
 fun ShowCow(resources: Resources) {
@@ -125,6 +166,8 @@ fun ShowCow(resources: Resources) {
 
 }
 
+
+
 @Preview(showBackground = true)
 @Composable
 fun CowPreview() {
@@ -134,6 +177,7 @@ fun CowPreview() {
             contentDescription = "Benny!"
         )
         Text(text = "Benny")
+        NameField(who = "Benny")
     }
 }
 
