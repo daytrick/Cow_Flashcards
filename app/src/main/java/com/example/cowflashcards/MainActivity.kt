@@ -1,45 +1,44 @@
 package com.example.cowflashcards
 
+import android.R.attr.height
+import android.R.attr.shape
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.cowflashcards.ui.theme.CowFlashcardsTheme
+
 
 // How to create maps from: https://www.baeldung.com/kotlin/maps
 val cows = mapOf<String, Int>(
@@ -115,6 +114,7 @@ fun CowDisplay() {
 @Composable
 fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
 
+    var showCowName by rememberSaveable { mutableStateOf(false) }
     val cow = cows.entries.elementAt(index)
 
     // How to stop elements from overlapping from: https://developer.android.com/jetpack/compose/layouts/basics
@@ -123,13 +123,26 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
         modifier = Modifier.padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // How to load image from disc from: https://developer.android.com/jetpack/compose/graphics/images/loading
-        Image(
-            painter = painterResource(cow.value),
-            contentDescription = "A cow?"
-        )
+
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+
+            // How to load image from disc from: https://developer.android.com/jetpack/compose/graphics/images/loading
+            Image(
+                painter = painterResource(cow.value),
+                contentDescription = "A cow?"
+            )
+
+            if (showCowName) {
+                Text(cow.key)
+            }
+
+        }
+
         // Text(text = cow.key)
-        NameField(who = cow.key, onIndexChange = onIndexChange)
+        NameField(who = cow.key, onIndexChange = onIndexChange, onShowCowNameChange = {showCowName = it})
+
     }
 
 }
@@ -139,10 +152,11 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
  * BasicTextField component from: https://developer.android.com/reference/kotlin/androidx/compose/foundation/text/package-summary#BasicTextField(kotlin.String,kotlin.Function1,androidx.compose.ui.Modifier,kotlin.Boolean,kotlin.Boolean,androidx.compose.ui.text.TextStyle,androidx.compose.foundation.text.KeyboardOptions,androidx.compose.foundation.text.KeyboardActions,kotlin.Boolean,kotlin.Int,kotlin.Int,androidx.compose.ui.text.input.VisualTransformation,kotlin.Function1,androidx.compose.foundation.interaction.MutableInteractionSource,androidx.compose.ui.graphics.Brush,kotlin.Function1)
  */
 @Composable
-fun NameField(who: String, onIndexChange: (Int) -> Unit) {
+fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (Boolean) -> Unit) {
 
     var answer by rememberSaveable { mutableStateOf("") }
-    var showPopUp by rememberSaveable { mutableStateOf(false) }
+    var doCheck by rememberSaveable { mutableStateOf(false) }
+    var showRevealButton by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -152,8 +166,8 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit) {
         BasicTextField(
             value = answer,
             onValueChange = {
-                showPopUp = false
-                Log.d("resultMessage",("Hid popup: $showPopUp"))
+                doCheck = false
+                Log.d("resultMessage",("Hid popup: $doCheck"))
                 answer = it
             },
             maxLines = 1,
@@ -176,27 +190,43 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit) {
 
         Button(
             onClick = {
-                showPopUp = true
-                Log.d("resultMessage", "Clicked button: $showPopUp")
+                doCheck = true
+                Log.d("resultMessage", "Clicked button: $doCheck")
             },
             contentPadding = ButtonDefaults.ContentPadding
         ) {
             Text("Check")
         }
 
+        if (showRevealButton) {
+            Button(
+                onClick = {
+                    onShowCowNameChange(true);
+                },
+                contentPadding = ButtonDefaults.ContentPadding
+            ) {
+                Text("Reveal")
+            }
+        }
+
     }
 
-    if (showPopUp) {
+    if (doCheck) {
         val correct = checkAnswer(who, answer)
         ShowResult(correct);
 
         if (correct) {
-            onIndexChange(getRandomIndex())
             answer = ""
-            showPopUp = false
+            doCheck = false
+            showRevealButton = false
+            onShowCowNameChange(false)
+            onIndexChange(getRandomIndex())
+        }
+        else {
+            showRevealButton = true;
         }
 
-        Log.d("resultMessage", "Showing popup: $showPopUp")
+        Log.d("resultMessage", "Showing popup: $doCheck")
 
     }
 
@@ -223,6 +253,12 @@ fun ShowResult(correct: Boolean) {
         val message = if (correct) "Correct!" else "Wrong!"
         Text(message)
     }
+
+}
+
+
+@Composable
+fun ShowRevealButton() {
 
 }
 
@@ -265,7 +301,8 @@ fun CowPreview() {
                 contentDescription = "Benny!"
             )
             // Text(text = "Benny")
-            NameField(who = "Benny", {})
+            NameField(who = "Benny", {}, {})
+
         }
     }
 }
