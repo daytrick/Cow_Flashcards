@@ -153,7 +153,7 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
                 Text(
                     text = cow.key,
                     fontSize = 64.sp,
-                    color = Color.Cyan
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -176,6 +176,13 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
  */
 @Composable
 fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (Boolean) -> Unit) {
+
+    val buttonColors = ButtonDefaults.buttonColors(
+        containerColor = Color(0xFFF9D6FC),
+        contentColor = Color(0xFFF9D6FC),
+        disabledContainerColor = Color(0xFFB984DC),
+        disabledContentColor = Color(0xFF4C4A4D)
+    )
 
     /** User's input. */
     var answer by rememberSaveable { mutableStateOf("") }
@@ -218,9 +225,13 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (B
         // Let user submit their answer
         Button(
             onClick = { doCheck = true },
-            contentPadding = ButtonDefaults.ContentPadding
+            contentPadding = ButtonDefaults.ContentPadding,
+            colors = buttonColors
         ) {
-            Text("Check")
+            Text(
+                "Check",
+                color = Color(0xFF4C4A4D)
+            )
         }
 
         // Only show the reveal button if user's gotten it wrong at least once
@@ -230,9 +241,13 @@ fun NameField(who: String, onIndexChange: (Int) -> Unit, onShowCowNameChange: (B
                     // Show the cow's name
                     onShowCowNameChange(true)
                 },
-                contentPadding = ButtonDefaults.ContentPadding
+                contentPadding = ButtonDefaults.ContentPadding,
+                colors = buttonColors
             ) {
-                Text("Reveal")
+                Text(
+                    "Reveal",
+                    color = Color(0xFF4C4A4D)
+                )
             }
         }
 
