@@ -1,4 +1,4 @@
-##### Name the Cow
+# Name the Cow
 
 ### Installation instructions:
 1. Download the APK.
