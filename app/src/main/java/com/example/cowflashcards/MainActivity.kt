@@ -153,7 +153,7 @@ fun ShowRandomCow(index: Int, onIndexChange: (Int) -> Unit) {
                 Text(
                     text = cow.key,
                     fontSize = 64.sp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color(0xFF2196F3)
                 )
             }
 
